@@ -205,7 +205,7 @@ function slippySlider({
   this.slider.addEventListener('mouseout', endDrag);
 };
 
-export default slippySlider;
+module.exports = slippySlider;
 
 
 /* 
