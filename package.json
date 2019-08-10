@@ -10,7 +10,8 @@
   "private": true,
   "scripts": {
     "dev": "gulp dev",
-    "build": "gulp build"
+    "build": "gulp build",
+    "clean": "gulp clean"
   },
   "devDependencies": {
     "browser-sync": "^2.26.7",
