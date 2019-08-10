@@ -6,7 +6,7 @@ More instructions coming soon.
 
 
 
-##Dev setup
+##Dev setup  
 ####This project uses gulp, scss, browserSync, Rollup and buble.
 
 ### Folder structure
