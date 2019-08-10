@@ -1,4 +1,4 @@
-import "scroll-behavior-polyfill";
+// import "scroll-behavior-polyfill";
 
 function slippySlider({
   slider = ".slippy-slider",
@@ -95,17 +95,129 @@ function slippySlider({
     return closest;
   };
 
+
+
+
+
+
+
+  /* 
+  Testing out request animation frame scrolling
+  */
+//  function rafScrollTo(target, from, to, duration) {
+//   let  fps = 60;
+//   let currentPosition = from;
+//   let time = 0;
+//   let request = requestAnimationFrame(move);
+  
+//   // formula     http://easings.net/
+//   // description https://stackoverflow.com/questions/8316882/what-is-an-easing-function
+//   // x: percent
+//   // t: current time,
+//   // b: beginning value,
+//   // c: change in value,
+//   // d: duration
+//   // function easeInOutQuad(x, t, b, c, d) {
+//   //   if ((t /= d / 2) < 1) {
+//   //       return c / 2 * t * t + b;
+//   //   } else {
+//   //       return -c / 2 * ((--t) * (t - 2) - 1) + b;
+//   //   }
+//   // };
+//   function easeInOutQuad(x, t, b, c, d) {
+// 		if ((t/=d/2) < 1) return c/2*t*t + b;
+// 		return -c/2 * ((--t)*(t-2) - 1) + b;
+// 	};
+  
+//   function move() {
+//     time += 1 / fps;
+//     currentPosition = easeInOutQuad(time * 100 / duration, time, from, to, duration);
+
+//     console.log(currentPosition);
+//     console.log('time', time);
+  
+//     if (currentPosition >= to) {
+//         cancelAnimationFrame(request);
+//         target.scrollLeft = to;
+//         return;
+//     }
+//     target.scrollLeft = currentPosition;
+//     request = requestAnimationFrame(move);
+//   }
+// }
+
+// scrollTo(this.slider, 0, 400, 1);
+
+
+function inOutQuad(n){
+  n *= 2;
+  if (n < 1) return 0.5 * n * n;
+  return - 0.5 * (--n * (n - 2) - 1);
+};
+
+function rafScrollTo(el, startx, destx){
+  var stop = false;
+
+  // animating x (margin-left) from 20 to 300, for example
+  // var startx = 20;
+  // var destx = 300;
+  var duration = 1000;
+  var start = null;
+  var end = null;
+
+  function startAnim(timeStamp) {
+      start = timeStamp;
+      end = start + duration;
+      draw(timeStamp);
+  }
+
+  function draw(now) {
+      if (stop) return;
+      if (now - start >= duration) stop = true;
+      var p = (now - start) / duration;
+      var val = inOutQuad(p);
+      var x = startx + (destx - startx) * val;
+      el.scrollLeft = x;
+      // $(domEl).css('margin-left', `${x}px`);
+      requestAnimationFrame(draw);
+  }
+
+  requestAnimationFrame(draw);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   /* 
   Functions to move slider
   */
   this.moveTo = x => {
     const scrollTo = findSlide(x).scrollOffset;
-    this.slider.scrollBy({
-      top: 0,
-      left: scrollTo,
-      behavior: "smooth",
-    });
-    return `${x} slide ${findSlide(x).index} ${scrollTo}`;
+    // this.slider.scrollBy({
+    //   top: 0,
+    //   left: scrollTo,
+    //   behavior: "smooth",
+    // });
+    console.log('scroll from', this.slider.scrollLeft);
+    console.log('scroll to', this.slider.scrollLeft + 200);
+    // console.log('scrollBy', this.slider.scrollLeft + scrollTo);
+    console.log('scrollBy', 200);
+    rafScrollTo(this.slider, this.slider.scrollLeft, this.slider.scrollLeft + 200);
+    // return `${x} slide ${findSlide(x).index} ${scrollTo}`;
   };
 
   /* 
@@ -199,10 +311,10 @@ function slippySlider({
     }
     mouseDown = false;
   };
-  this.slider.addEventListener('mousedown', startDrag);
-  this.slider.addEventListener('mousemove', drag);
-  this.slider.addEventListener('mouseup', endDrag);
-  this.slider.addEventListener('mouseout', endDrag);
+  // this.slider.addEventListener('mousedown', startDrag);
+  // this.slider.addEventListener('mousemove', drag);
+  // this.slider.addEventListener('mouseup', endDrag);
+  // this.slider.addEventListener('mouseout', endDrag);
 };
 
 export default slippySlider;
