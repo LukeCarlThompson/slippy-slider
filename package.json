@@ -23,7 +23,7 @@
     "gulp-group-css-media-queries": "^1.2.2",
     "gulp-sass": "^4.0.2",
     "gulp-sourcemaps": "^2.6.5",
-    "gulp-uglify": "^3.0.2",
+    "gulp-uglify-es": "^1.0.4",
     "rollup": "^1.19.4",
     "rollup-plugin-buble": "^0.19.8",
     "rollup-plugin-node-resolve": "^5.2.0",

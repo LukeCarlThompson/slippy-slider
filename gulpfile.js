@@ -14,13 +14,13 @@ const cssNano = require("gulp-cssNano");
 const rollup = require("gulp-better-rollup");
 const resolve = require('rollup-plugin-node-resolve');
 const buble = require("rollup-plugin-buble");
-const uglify = require("gulp-uglify");
+const uglify = require("gulp-uglify-es").default;
 
 // Project config
 const config = {
   src: {
     folder: "./_src/",
-    lib: "./_src/js/slippyslider.js",
+    lib: "./_src/js/lib/lib.js",
   },
   dev: "./dev/",
   dist: "./dist/",
@@ -32,12 +32,14 @@ function logChange(path) {
   console.log("File changed --> \x1b[32m\u001b[1m " + path + "\x1b[0m");
 }
 
-// Copy files
+
+// HTML processing
 function copyHtml() {
   return gulp
     .src(config.src.folder + "**/*.html")
     .pipe(copy(config.dev, { prefix: 1 }));
 }
+
 
 // SCSS processing
 function style() {
@@ -52,7 +54,52 @@ function style() {
     .pipe(browserSync.stream());
 }
 
+
 // JS processing
+function copyScripts() {
+  return gulp
+    .src(config.src.folder + "js/index.js", { allowEmpty: true } )
+    .pipe(gulp.dest(config.dev + "js/"));
+};
+
+function processDevScripts() {
+  return gulp
+    .src(config.dev + "js/index.js", { allowEmpty: true } )
+    .pipe(sourceMaps.init())
+    .pipe(
+      rollup(
+        {
+          plugins: [
+            resolve(),
+            buble({
+              transforms: {
+                modules: true,
+              },
+              targets: {
+                firefox: 32,
+                chrome: 24,
+                safari: 6,
+                opera: 15,
+                edge: 10,
+                ie: 10,
+              },
+            }),
+          ],
+        },
+        [
+          {
+            format: "iife",
+            file: "scripts.js",
+            name: config.name,
+          },
+        ]
+      )
+    )
+    .pipe(sourceMaps.write())
+    .pipe(gulp.dest(config.dev + "js/"));
+}
+
+
 function scripts() {
   return gulp
     .src(config.src.folder + "js/index.js", {
@@ -81,8 +128,8 @@ function scripts() {
         },
         [
           {
-            format: "iife",
-            file: "scripts.js",
+            format: "es",
+            file: config.name + ".esm.js",
             name: config.name,
           },
         ]
@@ -120,11 +167,6 @@ function packageScripts() {
         },
         [
           {
-            format: "cjs",
-            file: config.name + ".js",
-            name: config.name,
-          },
-          {
             format: "es",
             file: config.name + ".esm.js",
             name: config.name,
@@ -136,7 +178,7 @@ function packageScripts() {
           },
           {
             format: "iife",
-            file: config.name + ".iife.js",
+            file: config.name + ".js",
             name: config.name,
           },
         ]
@@ -180,9 +222,10 @@ function server() {
     .on("change", gulp.series(copyHtml, browserSync.reload));
   gulp
     .watch(config.src.folder + "**/*.js")
-    .on("change", gulp.series(scripts, browserSync.reload));
+    .on("change", gulp.series(packageScripts, copyScripts, processDevScripts , browserSync.reload));
 }
 
 // Gulp tasks exported
-exports.dev = gulp.series(cleanDev, copyHtml, style, scripts, server);
+exports.dev = gulp.series(packageScripts, copyHtml, style, copyScripts, processDevScripts, server);
 exports.build = gulp.series(cleanDist, packageScripts);
+exports.clean = gulp.series(cleanDist, cleanDev);

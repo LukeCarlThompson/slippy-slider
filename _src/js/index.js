@@ -1,4 +1,4 @@
-import slippySlider from './slippyslider.js';
+import slippySlider from '../../dist/slippyslider.esm.js';
 
 
 console.log('Index.js file 😎');
