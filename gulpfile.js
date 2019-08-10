@@ -99,46 +99,6 @@ function processDevScripts() {
     .pipe(gulp.dest(config.dev + "js/"));
 }
 
-
-function scripts() {
-  return gulp
-    .src(config.src.folder + "js/index.js", {
-      allowEmpty: true,
-    })
-    .pipe(sourceMaps.init())
-    .pipe(
-      rollup(
-        {
-          plugins: [
-            resolve(),
-            buble({
-              transforms: {
-                modules: false,
-              },
-              targets: {
-                firefox: 32,
-                chrome: 24,
-                safari: 6,
-                opera: 15,
-                edge: 10,
-                ie: 10,
-              },
-            }),
-          ],
-        },
-        [
-          {
-            format: "es",
-            file: config.name + ".esm.js",
-            name: config.name,
-          },
-        ]
-      )
-    )
-    .pipe(sourceMaps.write())
-    .pipe(gulp.dest(config.dev + "js/"));
-}
-
 // JS packages output
 function packageScripts() {
   return gulp
