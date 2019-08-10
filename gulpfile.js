@@ -18,7 +18,10 @@ const uglify = require("gulp-uglify");
 
 // Project config
 const config = {
-  src: "./_src/",
+  src: {
+    folder: "./_src/",
+    lib: "./_src/js/slippyslider.js",
+  },
   dev: "./dev/",
   dist: "./dist/",
   name: require("./package").name,
@@ -32,14 +35,14 @@ function logChange(path) {
 // Copy files
 function copyHtml() {
   return gulp
-    .src(config.src + "**/*.html")
+    .src(config.src.folder + "**/*.html")
     .pipe(copy(config.dev, { prefix: 1 }));
 }
 
 // SCSS processing
 function style() {
   return gulp
-    .src(config.src + "scss/style.scss")
+    .src(config.src.folder + "scss/style.scss")
     .pipe(sourceMaps.init())
     .pipe(sass().on("error", sass.logError))
     .pipe(autoprefixer())
@@ -52,7 +55,7 @@ function style() {
 // JS processing
 function scripts() {
   return gulp
-    .src(config.src + "js/index.js", {
+    .src(config.src.folder + "js/index.js", {
       allowEmpty: true,
     })
     .pipe(sourceMaps.init())
@@ -92,7 +95,7 @@ function scripts() {
 // JS packages output
 function packageScripts() {
   return gulp
-    .src(config.src + "js/index.js", {
+    .src(config.src.lib, {
       allowEmpty: true,
     })
     .pipe(
@@ -171,12 +174,12 @@ function server() {
   });
 
   // Watch scss, html and js files for changes. Process the files then update the browserSync server
-  gulp.watch(config.src + "scss/**/*.scss", style);
+  gulp.watch(config.src.folder + "scss/**/*.scss", style);
   gulp
-    .watch(config.src + "**/*.html")
+    .watch(config.src.folder + "**/*.html")
     .on("change", gulp.series(copyHtml, browserSync.reload));
   gulp
-    .watch(config.src + "**/*.js")
+    .watch(config.src.folder + "**/*.js")
     .on("change", gulp.series(scripts, browserSync.reload));
 }
 
