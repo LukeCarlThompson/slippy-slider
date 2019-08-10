@@ -12,6 +12,7 @@ const autoprefixer = require("gulp-autoprefixer");
 const cssNano = require("gulp-cssNano");
 
 const rollup = require("gulp-better-rollup");
+const resolve = require('rollup-plugin-node-resolve');
 const buble = require("rollup-plugin-buble");
 const uglify = require("gulp-uglify");
 
@@ -59,6 +60,7 @@ function scripts() {
       rollup(
         {
           plugins: [
+            resolve(),
             buble({
               transforms: {
                 modules: false,
@@ -97,6 +99,7 @@ function packageScripts() {
       rollup(
         {
           plugins: [
+            resolve(),
             buble({
               transforms: {
                 modules: false,
@@ -143,7 +146,7 @@ function packageScripts() {
 // Empty the dev folder
 function cleanDev() {
   return gulp
-    .src(config.dev + "/**/*", {
+    .src(config.dev, {
       read: false,
       allowEmpty: true,
     })
@@ -152,7 +155,7 @@ function cleanDev() {
 // empty the dist folder
 function cleanDist() {
   return gulp
-    .src(config.dist + "/**/*", {
+    .src(config.dist, {
       read: false,
       allowEmpty: true,
     })

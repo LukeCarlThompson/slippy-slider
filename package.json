@@ -1,8 +1,8 @@
 {
-  "name": "slippy-slider",
+  "name": "slippyslider",
   "version": "0.0.1",
-  "main": "dist/slippy-slider.umd.js",
-  "module": "dist/slippy-slider.esm.js",
+  "main": "dist/slippyslider.umd.js",
+  "module": "dist/slippyslider.esm.js",
   "description": "A slider/carousel based on extending the functionality of native scroll areas.",
   "author": "Luke Carl Thompson <hello@lukethompson.com.au> (https://lukethompson.com.au)",
   "license": "MIT",
@@ -25,7 +25,11 @@
     "gulp-sourcemaps": "^2.6.5",
     "gulp-uglify": "^3.0.2",
     "rollup": "^1.19.4",
-    "rollup-plugin-buble": "^0.19.8"
+    "rollup-plugin-buble": "^0.19.8",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "scroll-behavior-polyfill": "^2.0.10"
   },
-  "dependencies": {}
+  "dependencies": {
+    "modern-normalize": "^0.5.0"
+  }
 }
