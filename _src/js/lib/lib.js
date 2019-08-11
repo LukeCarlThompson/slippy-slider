@@ -181,6 +181,7 @@ function slippySlider({
     const nextFrame = time => {
       if (stop) {
         enableSnapping();
+        this.slider.scrollLeft = to;
         return;
       }
       if (time - start >= duration) stop = true;
@@ -267,18 +268,22 @@ function slippySlider({
   let firstPos = 0;
   let dragValue = 0;
   let sliderCurrentScroll = null;
+  // Flags to check whether screen was touched or snapping is turned on or off.
+  let didTouch = false;
+  let snapping = true;
 
   const startDrag = e => {
     e.stopPropagation();
+    if(didTouch) { didTouch = true; return }
     mouseDown = true;
     firstPos = e.pageX;
     sliderCurrentScroll = this.slider.scrollLeft;
-    disableSnapping();
   };
 
   const drag = e => {
     e.stopPropagation();
     if (mouseDown) {
+      if(snapping) { disableSnapping(); snapping = false }
       dragValue = firstPos - e.pageX + sliderCurrentScroll;
       this.slider.scrollLeft = dragValue;
     }
@@ -286,12 +291,17 @@ function slippySlider({
 
   const endDrag = e => {
     e.stopPropagation();
-    if (mouseDown) {
+    if (mouseDown && dragValue !== 0) {
       this.moveTo("active");
+      dragValue = 0;
       enableSnapping();
+      snapping = true;
     }
     mouseDown = false;
   };
+  // This stops touch event from triggering the mouse events as well.
+  this.track.addEventListener("touchend", () => didTouch = true );
+
   this.track.addEventListener("mousedown", startDrag);
   this.track.addEventListener("mousemove", drag);
   this.track.addEventListener("mouseup", endDrag);
