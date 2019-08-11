@@ -1,10 +1,12 @@
 
 /* 
-TODO: Set a duration parameter for the scrollFromTo timing
+TODO: Set a duration parameter for the scrollFromTo timing.
 
-TODO: Set a easing parameter for the scrollFromTo easing
+TODO: Set a easing parameter for the scrollFromTo easing.
 
 TODO: Test what happens when intersectionObserver fails provide a fallback. Probably looping over all slides and adding a class to make sure they are visible. Could just be the .on-screen class.
+
+TODO: Test with multiple sliders on the same page.
 
 TODO: If slider is currently scrolling, don't respond to clicks events or slide interaction until it is finished.
 
