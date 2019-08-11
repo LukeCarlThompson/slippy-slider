@@ -1,4 +1,3 @@
-
 /* 
 TODO: Set a duration parameter for the scrollFromTo timing.
 
@@ -33,19 +32,19 @@ function slippySlider({
   const slidesSelector = slides;
 
   // Array from helper
-  const arrayFrom = (nl) => Array.prototype.slice.call(nl);
+  const arrayFrom = nl => Array.prototype.slice.call(nl);
 
   this.slider = document.querySelector(slider);
-  if (! this.slider) {
-    return console.error('Please specify a slider target');
+  if (!this.slider) {
+    return console.error("Please specify a slider target");
   }
   this.track = this.slider.querySelector(track);
-  if (! this.track) {
-    return console.error('Cannot find slippy-slider__track');
+  if (!this.track) {
+    return console.error("Cannot find slippy-slider__track");
   }
   this.slides = arrayFrom(this.slider.querySelectorAll(slidesSelector));
-  if (! this.slides.length === 0) {
-    return console.error('Please specify a the slider slides');
+  if (!this.slides.length === 0) {
+    return console.error("Please specify a the slider slides");
   }
   this.center = center;
 
@@ -54,17 +53,16 @@ function slippySlider({
 
   // Let everyone know we are ready to get slippy
   console.log(
-    '%cReady to get Slippy  😎%c',
-    'color: black; font-family: sans-serif; font-weight: bold; font-style: italic; font-size: 20px; text-shadow: 1px 1px 0 white; padding: 10px 20px; background: linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%); border-radius: 4px;',
-    'font-size: 20px;'
-    );
-
+    "%cReady to get Slippy  😎%c",
+    "color: black; font-family: sans-serif; font-weight: bold; font-style: italic; font-size: 20px; text-shadow: 1px 1px 0 white; padding: 10px 20px; background: linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%); border-radius: 4px;",
+    "font-size: 20px;"
+  );
 
   /* 
   Set some custom css properties based on the params and add them to the slider
   */
-  const scrollSnapAlign = this.center ? 'center' : 'start';
-  this.slider.style.setProperty('--scroll-snap-align', scrollSnapAlign );
+  const scrollSnapAlign = this.center ? "center" : "start";
+  this.slider.style.setProperty("--scroll-snap-align", scrollSnapAlign);
   // TODO: Set a padding left and right option adjusts the intersection observer area
   // As well as adjusting the scroll container padding and offsetting the slider position detection and scrollOffset
 
@@ -84,15 +82,18 @@ function slippySlider({
   /* 
   Removes or adds a class from all slides
   */
-  const removeClassFromSlides = (className) => this.slides.map((slide) => slide.classList.remove(className));
-  const addClassToSlides = (className) => this.slides.map((slide) => slide.classList.add(className));
-
+  const removeClassFromSlides = className =>
+    this.slides.map(slide => slide.classList.remove(className));
+  const addClassToSlides = className =>
+    this.slides.map(slide => slide.classList.add(className));
 
   /* 
   Functions to disable scroll snapping for all slides and to remove inline styles
   */
-  const disableSnapping = () => this.slides.forEach(slide => slide.style.scrollSnapAlign = 'none');
-  const enableSnapping = () => this.slides.forEach(slide => slide.style.scrollSnapAlign = '');
+  const disableSnapping = () =>
+    this.slides.forEach(slide => (slide.style.scrollSnapAlign = "none"));
+  const enableSnapping = () =>
+    this.slides.forEach(slide => (slide.style.scrollSnapAlign = ""));
 
   /* 
   Finds closest slide to the left edge or the center of the slider depending on slider settings
@@ -114,7 +115,7 @@ function slippySlider({
         index: i,
         position: getPosition(slide),
         scrollOffset: getPosition(slide) - sliderPosition,
-        slide: slide
+        slide: slide,
       };
     });
 
@@ -146,17 +147,24 @@ function slippySlider({
   Easing functions
   */
   this.easing = {
-    inOutQuad: (t) => { return t<.5 ? 2*t*t : -1+(4-2*t)*t },
-    inOutCubic: (t) => { return t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1 },
-    inOutQuart: (t) => { return t<.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t },
-    inOutQuint: (t) => { return t<.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t },
-  }
+    inOutQuad: t => {
+      return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    },
+    inOutCubic: t => {
+      return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+    },
+    inOutQuart: t => {
+      return t < 0.5 ? 8 * t * t * t * t : 1 - 8 * --t * t * t * t;
+    },
+    inOutQuint: t => {
+      return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * --t * t * t * t * t;
+    },
+  };
 
   /* 
   RAF powered scroll from to
   */
   this.scrollFromTo = (from, to, duration = 800) => {
-    console.log('scrollFromTo Triggered');
     let stop = false;
     let start = null;
     let end = null;
@@ -166,7 +174,7 @@ function slippySlider({
       end = start + duration;
       disableSnapping();
       nextFrame(time);
-    }
+    };
 
     const nextFrame = time => {
       if (stop) {
@@ -179,10 +187,10 @@ function slippySlider({
       const nextPosition = from + (to - from) * val;
       this.slider.scrollLeft = nextPosition;
       requestAnimationFrame(nextFrame);
-    }
+    };
 
     requestAnimationFrame(startAnim);
-  }
+  };
 
   /* 
   Functions to move slider
@@ -217,40 +225,37 @@ function slippySlider({
         el.classList.remove("on-screen");
       }
 
-      if(! this.center) {
-        removeClassFromSlides('active-slide');
-        findSlide('active').slide.classList.add('active-slide');
+      if (!this.center) {
+        removeClassFromSlides("active-slide");
+        findSlide("active").slide.classList.add("active-slide");
       }
     }
   }, options);
 
   this.slides.forEach(slide => observer.observe(slide));
 
-
   /* 
   Intersection Observer watching for the slide in the center of the slider
   */
- if(this.center) {
-  const centerSlideOptions = {
-    root: this.slider,
-    threshold: 0,
-    rootMargin: '100px -50% 100px -50%',
-  };
-  const centerSlide = new IntersectionObserver((entries, observer) => {
-    for (let i = 0; i < entries.length; i++) {
-      const entry = entries[i];
-      const el = entry.target;
-      if (entry.isIntersecting) {
-        el.classList.add('active-slide');
-      } else {
-        el.classList.remove('active-slide');
-      }
+  if (this.center) {
+    const centerSlideOptions = {
+      root: this.slider,
+      threshold: 0,
+      rootMargin: "100px -50% 100px -50%",
     };
-
-  }, centerSlideOptions);
-  this.slides.forEach((slide) => centerSlide.observe(slide) );
-  };
-
+    const centerSlide = new IntersectionObserver((entries, observer) => {
+      for (let i = 0; i < entries.length; i++) {
+        const entry = entries[i];
+        const el = entry.target;
+        if (entry.isIntersecting) {
+          el.classList.add("active-slide");
+        } else {
+          el.classList.remove("active-slide");
+        }
+      }
+    }, centerSlideOptions);
+    this.slides.forEach(slide => centerSlide.observe(slide));
+  }
 
   /* 
   Functions to allow dragging with the mouse pointer
@@ -261,7 +266,7 @@ function slippySlider({
   let dragValue = 0;
   let sliderCurrentScroll = null;
 
-  const startDrag = (e) => {
+  const startDrag = e => {
     e.stopPropagation();
     mouseDown = true;
     firstPos = e.pageX;
@@ -269,26 +274,26 @@ function slippySlider({
     disableSnapping();
   };
 
-  const drag = (e) => {
+  const drag = e => {
     e.stopPropagation();
-    if(mouseDown) {
-      dragValue = (firstPos - e.pageX) + sliderCurrentScroll;
+    if (mouseDown) {
+      dragValue = firstPos - e.pageX + sliderCurrentScroll;
       this.slider.scrollLeft = dragValue;
-    };
+    }
   };
 
-  const endDrag = (e) => {
+  const endDrag = e => {
     e.stopPropagation();
-    if(mouseDown) {
-        this.moveTo('active');
-        enableSnapping();
+    if (mouseDown) {
+      this.moveTo("active");
+      enableSnapping();
     }
     mouseDown = false;
   };
-  this.track.addEventListener('mousedown', startDrag);
-  this.track.addEventListener('mousemove', drag);
-  this.track.addEventListener('mouseup', endDrag);
-  this.track.addEventListener('mouseout', endDrag);
-};
+  this.track.addEventListener("mousedown", startDrag);
+  this.track.addEventListener("mousemove", drag);
+  this.track.addEventListener("mouseup", endDrag);
+  this.track.addEventListener("mouseout", endDrag);
+}
 
 export default slippySlider;
