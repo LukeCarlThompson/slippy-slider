@@ -1,7 +1,30 @@
-// import "scroll-behavior-polyfill";
+
+/* 
+TODO: Set a duration parameter for the scrollFromTo timing
+
+TODO: Set a easing parameter for the scrollFromTo easing
+
+TODO: Test what happens when intersectionObserver fails provide a fallback. Probably looping over all slides and adding a class to make sure they are visible. Could just be the .on-screen class.
+
+TODO: If slider is currently scrolling, don't respond to clicks events or slide interaction until it is finished.
+
+TODO: Test out automating the slider dots/thumbnails creation.
+
+TODO: Test out the slider emitting some custom events that fire when the slider is moved to a new slide.
+
+TODO: Test out using a throttled resize listener that shows and hides the navigation buttons when all slides are on the screen. Or should this be left up to CSS?
+
+TODO: Create a destroy method that removes the intersection observer and event listeners.
+
+TODO: Test listening for swipe gestures instead of just relying on the cosest slide. Can be awkward to click and drag so far if the slide takes up the whole screen.
+
+TODO: Test a scroll listener that updates a css variable relating to the position of the slide inside the scroll window. Similar to the way ScrollOut works. Perhaps as a plugin.
+
+*/
 
 function slippySlider({
   slider = ".slippy-slider",
+  track = ".slippy-slider__track",
   slides = ".slippy-slider__slide",
   center = true,
 } = {}) {
@@ -14,6 +37,10 @@ function slippySlider({
   if (! this.slider) {
     return console.error('Please specify a slider target');
   }
+  this.track = this.slider.querySelector(track);
+  if (! this.track) {
+    return console.error('Cannot find slippy-slider__track');
+  }
   this.slides = arrayFrom(this.slider.querySelectorAll(slidesSelector));
   if (! this.slides.length === 0) {
     return console.error('Please specify a the slider slides');
@@ -23,13 +50,20 @@ function slippySlider({
   this.updateSlides = () =>
     (this.slides = arrayFrom(this.slider.querySelectorAll(slidesSelector)));
 
+  // Let everyone know we are ready to get slippy
+  console.log(
+    '%cReady to get Slippy  😎%c',
+    'color: black; font-family: sans-serif; font-weight: bold; font-style: italic; font-size: 20px; text-shadow: 1px 1px 0 white; padding: 10px 20px; background: linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%); border-radius: 4px;',
+    'font-size: 20px;'
+    );
+
 
   /* 
   Set some custom css properties based on the params and add them to the slider
   */
   const scrollSnapAlign = this.center ? 'center' : 'start';
   this.slider.style.setProperty('--scroll-snap-align', scrollSnapAlign );
-  // TODO: Set a padding left and right option that sets a width for the before/after elements on the parent slider
+  // TODO: Set a padding left and right option adjusts the intersection observer area
   // As well as adjusting the scroll container padding and offsetting the slider position detection and scrollOffset
 
   /*
@@ -48,17 +82,28 @@ function slippySlider({
   /* 
   Removes or adds a class from all slides
   */
- const removeClassFromSlides = (className) => this.slides.map((slide) => slide.classList.remove(className));
- const addClassToSlides = (className) => this.slides.map((slide) => slide.classList.add(className));
+  const removeClassFromSlides = (className) => this.slides.map((slide) => slide.classList.remove(className));
+  const addClassToSlides = (className) => this.slides.map((slide) => slide.classList.add(className));
+
+
+  /* 
+  Functions to disable scroll snapping for all slides and to remove inline styles
+  */
+  const disableSnapping = () => this.slides.forEach(slide => slide.style.scrollSnapAlign = 'none');
+  const enableSnapping = () => this.slides.forEach(slide => slide.style.scrollSnapAlign = '');
 
   /* 
   Finds closest slide to the left edge or the center of the slider depending on slider settings
-  Returns an object { 
-                      index: (this.slides array index),
-                      position: (distance from left or center edge),
-                      scrollOffset: (distance to scroll this slide into active position)
-                      slide: (slide element)
-                    }
+  Returns the following object object 
+  { 
+    index: (this.slides array index),
+    position: (distance from left or center edge),
+    scrollOffset: (distance to scroll this slide into active position)
+    slide: (slide element)
+  }
+  TODO: Set up better fallbacks in case the first or last slide can't be scrolled to.
+    - Check if there is any distance left to scroll in the container. If not then go back tot he start.
+    - If no slide is active then scroll to the nearest slide
    */
   const findSlide = (x = "active") => {
     const sliderPosition = getPosition(this.slider);
@@ -95,129 +140,57 @@ function slippySlider({
     return closest;
   };
 
-
-
-
-
-
+  /* 
+  Easing functions
+  */
+  this.easing = {
+    inOutQuad: (t) => { return t<.5 ? 2*t*t : -1+(4-2*t)*t },
+    inOutCubic: (t) => { return t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1 },
+    inOutQuart: (t) => { return t<.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t },
+    inOutQuint: (t) => { return t<.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t },
+  }
 
   /* 
-  Testing out request animation frame scrolling
+  RAF powered scroll from to
   */
-//  function rafScrollTo(target, from, to, duration) {
-//   let  fps = 60;
-//   let currentPosition = from;
-//   let time = 0;
-//   let request = requestAnimationFrame(move);
-  
-//   // formula     http://easings.net/
-//   // description https://stackoverflow.com/questions/8316882/what-is-an-easing-function
-//   // x: percent
-//   // t: current time,
-//   // b: beginning value,
-//   // c: change in value,
-//   // d: duration
-//   // function easeInOutQuad(x, t, b, c, d) {
-//   //   if ((t /= d / 2) < 1) {
-//   //       return c / 2 * t * t + b;
-//   //   } else {
-//   //       return -c / 2 * ((--t) * (t - 2) - 1) + b;
-//   //   }
-//   // };
-//   function easeInOutQuad(x, t, b, c, d) {
-// 		if ((t/=d/2) < 1) return c/2*t*t + b;
-// 		return -c/2 * ((--t)*(t-2) - 1) + b;
-// 	};
-  
-//   function move() {
-//     time += 1 / fps;
-//     currentPosition = easeInOutQuad(time * 100 / duration, time, from, to, duration);
+  this.scrollFromTo = (from, to, duration = 800) => {
+    console.log('scrollFromTo Triggered');
+    let stop = false;
+    let start = null;
+    let end = null;
 
-//     console.log(currentPosition);
-//     console.log('time', time);
-  
-//     if (currentPosition >= to) {
-//         cancelAnimationFrame(request);
-//         target.scrollLeft = to;
-//         return;
-//     }
-//     target.scrollLeft = currentPosition;
-//     request = requestAnimationFrame(move);
-//   }
-// }
-
-// scrollTo(this.slider, 0, 400, 1);
-
-
-function inOutQuad(n){
-  n *= 2;
-  if (n < 1) return 0.5 * n * n;
-  return - 0.5 * (--n * (n - 2) - 1);
-};
-
-function rafScrollTo(el, startx, destx){
-  var stop = false;
-
-  // animating x (margin-left) from 20 to 300, for example
-  // var startx = 20;
-  // var destx = 300;
-  var duration = 1000;
-  var start = null;
-  var end = null;
-
-  function startAnim(timeStamp) {
-      start = timeStamp;
+    const startAnim = time => {
+      start = time;
       end = start + duration;
-      draw(timeStamp);
+      disableSnapping();
+      nextFrame(time);
+    }
+
+    const nextFrame = time => {
+      if (stop) {
+        enableSnapping();
+        return;
+      }
+      if (time - start >= duration) stop = true;
+      const progress = (time - start) / duration;
+      const val = this.easing.inOutCubic(progress);
+      const nextPosition = from + (to - from) * val;
+      this.slider.scrollLeft = nextPosition;
+      requestAnimationFrame(nextFrame);
+    }
+
+    requestAnimationFrame(startAnim);
   }
-
-  function draw(now) {
-      if (stop) return;
-      if (now - start >= duration) stop = true;
-      var p = (now - start) / duration;
-      var val = inOutQuad(p);
-      var x = startx + (destx - startx) * val;
-      el.scrollLeft = x;
-      // $(domEl).css('margin-left', `${x}px`);
-      requestAnimationFrame(draw);
-  }
-
-  requestAnimationFrame(draw);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   /* 
   Functions to move slider
+  TODO: Revisist this and check if it should be consolidated into the scrollFromTo function
   */
   this.moveTo = x => {
-    const scrollTo = findSlide(x).scrollOffset;
-    // this.slider.scrollBy({
-    //   top: 0,
-    //   left: scrollTo,
-    //   behavior: "smooth",
-    // });
-    console.log('scroll from', this.slider.scrollLeft);
-    console.log('scroll to', this.slider.scrollLeft + 200);
-    // console.log('scrollBy', this.slider.scrollLeft + scrollTo);
-    console.log('scrollBy', 200);
-    rafScrollTo(this.slider, this.slider.scrollLeft, this.slider.scrollLeft + 200);
-    // return `${x} slide ${findSlide(x).index} ${scrollTo}`;
+    const scrollOffset = findSlide(x).scrollOffset;
+    const sliderScrollPos = this.slider.scrollLeft;
+    const newSliderScrollPos = sliderScrollPos + scrollOffset;
+    this.scrollFromTo(sliderScrollPos, newSliderScrollPos);
   };
 
   /* 
@@ -287,15 +260,15 @@ function rafScrollTo(el, startx, destx){
   let sliderCurrentScroll = null;
 
   const startDrag = (e) => {
+    e.stopPropagation();
     mouseDown = true;
     firstPos = e.pageX;
     sliderCurrentScroll = this.slider.scrollLeft;
-    this.slides.forEach((slide) => {
-      slide.style.scrollSnapAlign = 'none';
-    });
+    disableSnapping();
   };
 
   const drag = (e) => {
+    e.stopPropagation();
     if(mouseDown) {
       dragValue = (firstPos - e.pageX) + sliderCurrentScroll;
       this.slider.scrollLeft = dragValue;
@@ -303,40 +276,17 @@ function rafScrollTo(el, startx, destx){
   };
 
   const endDrag = (e) => {
+    e.stopPropagation();
     if(mouseDown) {
         this.moveTo('active');
-      this.slides.forEach((slide) => {
-        slide.style.scrollSnapAlign = '';
-      });
+        enableSnapping();
     }
     mouseDown = false;
   };
-  // this.slider.addEventListener('mousedown', startDrag);
-  // this.slider.addEventListener('mousemove', drag);
-  // this.slider.addEventListener('mouseup', endDrag);
-  // this.slider.addEventListener('mouseout', endDrag);
+  this.track.addEventListener('mousedown', startDrag);
+  this.track.addEventListener('mousemove', drag);
+  this.track.addEventListener('mouseup', endDrag);
+  this.track.addEventListener('mouseout', endDrag);
 };
 
 export default slippySlider;
-
-
-/* 
-TODO: If there is no current active slide then next or prev should move to the closest slide before mocing to the next or prev one
-
-TODO: Allow slider to loop back to that start of it can't scroll anymore
-
-TODO: Test what happens when intersectionObserver fails provide a fallback
-
-TODO: Test listening for swipe gestures instead of just relying on the cosest slide.
-
-TODO: Set up scroll listener that updates a css variable relating to the position of the slide inside the scroll window. Similar to the way ScrollOut works.
-
-TODO: If slider is currently scrolling, don't allow further clicks events or slide interaction until it is finished.
-
-TODO: Test out automating the slider dots/thumbnails creation
-
-TODO: Test out putting in some custom event that fire when the slider is moved to anew slide
-
-TODO: Create a destroy method that removes the intersection observer and event listeners
-
-*/
