@@ -7,6 +7,8 @@ TODO: Test what happens when intersectionObserver fails provide a fallback. Prob
 
 TODO: Test with multiple sliders on the same page.
 
+TODO: Test on mobile to see if click, mousedown or mouseup events are being simulated and fired. Got a hunch this is interferring with the native scroll behaviour;
+
 TODO: If slider is currently scrolling, don't respond to clicks events or slide interaction until it is finished.
 
 TODO: Test out automating the slider dots/thumbnails creation.
