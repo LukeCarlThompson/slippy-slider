@@ -2,7 +2,18 @@
 ### A slider based on extending the functionality of native scroll areas
 
 A work in progress.  
-More instructions coming soon.  
+More instructions coming soon. 
+
+## PROJECT GOALS
+  1. Slider styled mostly via css and not rely on javascript dom manipulation
+  2. Allow for center and left aligned slides
+  3. Allow for next and prev slide buttons
+  4. Allow for slide thumbnails or dots navigation
+  5. Responsive out of the box
+  6. Allow for mulitple instances on the same page.
+  7. Degrade gracefully in older browsers to appear as a native scroll area.
+  8. Degrade gracefully if JS doesn't run or is not supported
+  9. under 10kb
 
 
 
