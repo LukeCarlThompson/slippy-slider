@@ -4,7 +4,7 @@
 A work in progress.  
 More instructions coming soon. 
 
-## PROJECT GOALS
+## Project goals
   1. Slider styled mostly via css and not rely on javascript dom manipulation
   2. Allow for center and left aligned slides
   3. Allow for next and prev slide buttons
