@@ -11,9 +11,10 @@ More instructions coming soon.
   4. Allow for slide thumbnails or dots navigation
   5. Responsive out of the box
   6. Allow for mulitple instances on the same page.
-  7. Degrade gracefully in older browsers to appear as a native scroll area.
-  8. Degrade gracefully if JS doesn't run or is not supported
-  9. under 10kb
+  7. Zero dependencies
+  8. Degrade gracefully in older browsers to appear as a native scroll area.
+  9. Degrade gracefully if JS doesn't run or is not supported
+  10. under 10kb
 
 
 
