@@ -19,7 +19,7 @@ More instructions coming soon.
 
 
 ## Dev setup  
-#### This project uses gulp, scss, browserSync, Rollup and buble.
+#### This project uses gulp, scss, browserSync, Rollup and Bublé.
 
 ### Folder structure
 **_src/** - is where you work  
