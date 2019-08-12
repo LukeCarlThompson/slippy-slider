@@ -1,4 +1,7 @@
 /* 
+
+TODO: Use a transform animation on the slider track to scroll it. The remove the transfrom and set the scroll position instantly. Test for efficiency.
+
 TODO: Set a duration parameter for the scrollFromTo timing.
 
 TODO: Set a easing parameter for the scrollFromTo easing.
