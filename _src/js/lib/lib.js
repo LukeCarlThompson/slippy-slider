@@ -1,7 +1,5 @@
 /* 
 
-TODO: Use a transform animation on the slider track to scroll it. The remove the transfrom and set the scroll position instantly. Test for efficiency.
-
 TODO: Set a duration parameter for the scrollFromTo timing.
 
 TODO: Set a easing parameter for the scrollFromTo easing.
@@ -9,8 +7,6 @@ TODO: Set a easing parameter for the scrollFromTo easing.
 TODO: Test what happens when intersectionObserver fails provide a fallback. Probably looping over all slides and adding a class to make sure they are visible. Could just be the .on-screen class.
 
 TODO: Test with multiple sliders on the same page.
-
-TODO: Test on mobile to see if click, mousedown or mouseup events are being simulated and fired. Got a hunch this is interferring with the native scroll behaviour;
 
 TODO: If slider is currently scrolling, don't respond to clicks events or slide interaction until it is finished.
 
@@ -96,9 +92,11 @@ function slippySlider({
   Functions to disable scroll snapping for all slides and to remove inline styles
   */
   const disableSnapping = () =>
-    this.slides.forEach(slide => (slide.style.scrollSnapAlign = "none"));
+  this.slider.style.scrollSnapType= 'none';
+    // this.slides.forEach(slide => (slide.style.scrollSnapAlign = "none"));
   const enableSnapping = () =>
-    this.slides.forEach(slide => (slide.style.scrollSnapAlign = ""));
+  this.slider.style.scrollSnapType= '';
+    // this.slides.forEach(slide => (slide.style.scrollSnapAlign = ""));
 
   /* 
   Finds closest slide to the left edge or the center of the slider depending on slider settings
@@ -167,12 +165,17 @@ function slippySlider({
   };
 
   /* 
-  RAF powered scroll from to
+  RAF powered animation.
+  Animates the track's transform to correct position, then removes the transform and snaps to the same scroll position
   */
-  this.scrollFromTo = (from, to, duration = 800) => {
+  this.moveTo = (x, duration = 800) => {
     let stop = false;
     let start = null;
     let end = null;
+
+    const from = 0;
+    const to = findSlide(x).scrollOffset;
+    const finalScrollPos = to + this.slider.scrollLeft;
 
     const startAnim = time => {
       start = time;
@@ -184,29 +187,19 @@ function slippySlider({
     const nextFrame = time => {
       if (stop) {
         enableSnapping();
-        this.slider.scrollLeft = to;
+        this.track.style.transform = '';
+        this.slider.scrollLeft = finalScrollPos;
         return;
       }
       if (time - start >= duration) stop = true;
       const progress = (time - start) / duration;
       const val = this.easing.inOutCubic(progress);
-      const nextPosition = from + (to - from) * val;
-      this.slider.scrollLeft = nextPosition;
+      const nextPosition = (from + (to - from) * val) * -1;
+      this.track.style.transform = `translateX(${nextPosition}px)`;
       requestAnimationFrame(nextFrame);
     };
 
     requestAnimationFrame(startAnim);
-  };
-
-  /* 
-  Functions to move slider
-  TODO: Revisist this and check if it should be consolidated into the scrollFromTo function
-  */
-  this.moveTo = x => {
-    const scrollOffset = findSlide(x).scrollOffset;
-    const sliderScrollPos = this.slider.scrollLeft;
-    const newSliderScrollPos = sliderScrollPos + scrollOffset;
-    this.scrollFromTo(sliderScrollPos, newSliderScrollPos);
   };
 
   /* 
@@ -297,7 +290,7 @@ function slippySlider({
     if (mouseDown && dragValue !== 0) {
       this.moveTo("active");
       dragValue = 0;
-      enableSnapping();
+      // enableSnapping();
       snapping = true;
     }
     mouseDown = false;

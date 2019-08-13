@@ -66,6 +66,7 @@ body {
 
 // slippy-slider custom styles for testing
 .slippy-slider__track {
+  position: relative;
   padding-left: calc(50vw - 200px);
   padding-right: calc(50vw - 200px);
   border: 1px solid red;
