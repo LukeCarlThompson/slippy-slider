@@ -58,6 +58,7 @@ const slider = new slippySlider();
 ````
 
 ## Extra slippy setup
+More examples coming soon
 
 ## Slippy options
 ````javascript
