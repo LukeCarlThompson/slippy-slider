@@ -91,12 +91,14 @@ function slippySlider({
   /* 
   Functions to disable scroll snapping for all slides and to remove inline styles
   */
-  const disableSnapping = () =>
-  this.slider.style.scrollSnapType= 'none';
-    // this.slides.forEach(slide => (slide.style.scrollSnapAlign = "none"));
-  const enableSnapping = () =>
-  this.slider.style.scrollSnapType= '';
-    // this.slides.forEach(slide => (slide.style.scrollSnapAlign = ""));
+  const disableSnapping = () => {
+    this.slider.style.scrollSnapType = "none";
+    this.slides.forEach(slide => (slide.style.scrollSnapAlign = "none"));
+  };
+  const enableSnapping = () => {
+    this.slider.style.scrollSnapType = "";
+    this.slides.forEach(slide => (slide.style.scrollSnapAlign = ""));
+  };
 
   /* 
   Finds closest slide to the left edge or the center of the slider depending on slider settings
@@ -187,7 +189,7 @@ function slippySlider({
     const nextFrame = time => {
       if (stop) {
         enableSnapping();
-        this.track.style.transform = '';
+        this.track.style.transform = "";
         this.slider.scrollLeft = finalScrollPos;
         return;
       }
@@ -270,7 +272,10 @@ function slippySlider({
 
   const startDrag = e => {
     e.stopPropagation();
-    if(didTouch) { didTouch = true; return }
+    if (didTouch) {
+      didTouch = true;
+      return;
+    }
     mouseDown = true;
     firstPos = e.pageX;
     sliderCurrentScroll = this.slider.scrollLeft;
@@ -279,7 +284,10 @@ function slippySlider({
   const drag = e => {
     e.stopPropagation();
     if (mouseDown) {
-      if(snapping) { disableSnapping(); snapping = false }
+      if (snapping) {
+        disableSnapping();
+        snapping = false;
+      }
       dragValue = firstPos - e.pageX + sliderCurrentScroll;
       this.slider.scrollLeft = dragValue;
     }
@@ -296,7 +304,7 @@ function slippySlider({
     mouseDown = false;
   };
   // This stops touch event from triggering the mouse events as well.
-  this.track.addEventListener("touchend", () => didTouch = true );
+  this.track.addEventListener("touchend", () => (didTouch = true));
 
   this.track.addEventListener("mousedown", startDrag);
   this.track.addEventListener("mousemove", drag);
