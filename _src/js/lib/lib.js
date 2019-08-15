@@ -197,7 +197,7 @@ function slippySlider({
       const progress = (time - start) / duration;
       const val = this.easing.inOutCubic(progress);
       const nextPosition = (from + (to - from) * val) * -1;
-      this.track.style.transform = `translateX(${nextPosition}px)`;
+      this.track.style.transform = `translate3d(${nextPosition}px, 0, 0)`;
       requestAnimationFrame(nextFrame);
     };
 
@@ -304,7 +304,7 @@ function slippySlider({
     mouseDown = false;
   };
   // This stops touch event from triggering the mouse events as well.
-  this.track.addEventListener("touchend", () => (didTouch = true));
+  this.track.addEventListener("touchstart", () => (didTouch = true));
 
   this.track.addEventListener("mousedown", startDrag);
   this.track.addEventListener("mousemove", drag);
