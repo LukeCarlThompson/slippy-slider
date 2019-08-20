@@ -22,6 +22,18 @@ TODO: Test listening for swipe gestures instead of just relying on the cosest sl
 
 TODO: Test a scroll listener that updates a css variable relating to the position of the slide inside the scroll window. Similar to the way ScrollOut works. Perhaps as a plugin.
 
+
+
+
+
+
+
+TODO: Latest testing reveals that it's all the class swapping during scrolling in safari that causes all the jank.
+We can remove scrolling and scroll snapping altogether and still be able to set scroll position for the slider.
+Or perhaps test out just using a transform percentage value set inline.
+This will probably still require a resize listener that then removes it at certain breakpoints though.
+To Allow CSS styling that sets up and removes the slider. Or perhaps an configurable option that just fires an event/callback function at whatever breakpoint you set. This event listener could be heavily debounced.
+
 */
 
 function slippySlider({
@@ -92,12 +104,14 @@ function slippySlider({
   Functions to disable scroll snapping for all slides and to remove inline styles
   */
   const disableSnapping = () => {
-    this.slider.style.scrollSnapType = "none";
-    this.slides.forEach(slide => (slide.style.scrollSnapAlign = "none"));
+    console.log("disabled snapping");
+    // this.slider.style.scrollSnapType = "none";
+    // this.slides.forEach(slide => (slide.style.scrollSnapAlign = "none"));
   };
   const enableSnapping = () => {
-    this.slider.style.scrollSnapType = "";
-    this.slides.forEach(slide => (slide.style.scrollSnapAlign = ""));
+    console.log("enabled snapping");
+    // this.slider.style.scrollSnapType = "";
+    // this.slides.forEach(slide => (slide.style.scrollSnapAlign = ""));
   };
 
   /* 
@@ -114,6 +128,7 @@ function slippySlider({
     - If no slide is active then scroll to the nearest slide
    */
   const findSlide = (x = "active") => {
+    console.log("findSlide");
     const sliderPosition = getPosition(this.slider);
     const slidePositions = this.slides.map((slide, i) => {
       return {
@@ -171,6 +186,7 @@ function slippySlider({
   Animates the track's transform to correct position, then removes the transform and snaps to the same scroll position
   */
   this.moveTo = (x, duration = 800) => {
+    console.log("moveTo");
     let stop = false;
     let start = null;
     let end = null;
@@ -221,8 +237,10 @@ function slippySlider({
       const el = entry.target;
 
       if (entry.intersectionRatio >= 0.49) {
+        console.log("on-screen", el);
         el.classList.add("on-screen");
       } else {
+        console.log("removed on-screen", el);
         el.classList.remove("on-screen");
       }
 
@@ -271,7 +289,9 @@ function slippySlider({
   let snapping = true;
 
   const startDrag = e => {
+    console.log("startDrag");
     e.stopPropagation();
+    // e.preventDefault();
     if (didTouch) {
       didTouch = true;
       return;
@@ -282,7 +302,8 @@ function slippySlider({
   };
 
   const drag = e => {
-    e.stopPropagation();
+    console.log("drag");
+    // e.stopPropagation();
     if (mouseDown) {
       if (snapping) {
         disableSnapping();
@@ -294,6 +315,7 @@ function slippySlider({
   };
 
   const endDrag = e => {
+    console.log("endDrag");
     e.stopPropagation();
     if (mouseDown && dragValue !== 0) {
       this.moveTo("active");
@@ -304,7 +326,15 @@ function slippySlider({
     mouseDown = false;
   };
   // This stops touch event from triggering the mouse events as well.
-  this.track.addEventListener("touchstart", () => (didTouch = true));
+  // this.track.addEventListener("touchstart", () => {
+  //   didTouch = true;
+  //   console.log("touchstart");
+  // });
+
+  // Testing out overriding scrolling for touch
+  this.track.addEventListener("touchstart", startDrag);
+  this.track.addEventListener("touchmove", drag);
+  this.track.addEventListener("touchend", endDrag);
 
   this.track.addEventListener("mousedown", startDrag);
   this.track.addEventListener("mousemove", drag);

@@ -15,6 +15,10 @@ body {
   color: white;
 }
 
+.page-content {
+  overflow: hidden;
+}
+
 
 
 
@@ -23,10 +27,12 @@ body {
 // slippy-slider lib default styles
 .slippy-slider {
   display: flex;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  overflow-x: scroll;
+  // scroll-snap-type: x mandatory;
+  // -webkit-overflow-scrolling: touch;
+  // overflow-x: scroll;
+  overflow-x: visible;
   overflow-y: hidden;
+  overflow: hidden;
 // this is a required hack to make the scroll container respect the right side parent padding or child margin
   &:after {
     content: "";
@@ -43,18 +49,19 @@ body {
     margin-right: -1px;
   }
   // hide the scrollbars
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none;  /* IE 10+ */
-  &::-webkit-scrollbar { /* WebKit */
-    width: 0;
-    height: 0;
-  }
+  // scrollbar-width: none; /* Firefox */
+  // -ms-overflow-style: none;  /* IE 10+ */
+  // &::-webkit-scrollbar { /* WebKit */
+  //   width: 0;
+  //   height: 0;
+  // }
   &__track {
     display: flex;
     height: 100%;
+    will-change: transform;
   }
   &__slide {
-    scroll-snap-align: var(--scroll-snap-align);
+    // scroll-snap-align: var(--scroll-snap-align);
   &.on-screen {
 
   }
@@ -208,17 +215,26 @@ body {
 .test-container {
   width: 50vw;
   margin: 100px auto;
-  overflow: hidden;
+  // overflow: hidden;
+  // overflow: visible;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  overflow: scroll;
+  background: green;
+  padding: 20px;
 }
 .test-track {
   display: flex;
-  width: 1000%; // Percentage based on the number of slides
-  transform: translateX(-40%);
+  // transform: translateX(-200%);
+  overflow: visible;
   background-color: pink;
+  box-shadow: 0 0 0 10px blue;
 }
 
 .test-slide {
-  flex: 0 0 10%; // Percentage based on the number of slides
+  // flex: 0 0 10%; // Percentage based on the number of slides
+  scroll-snap-align: center;
+  min-width: 100%;
   height: 400px;
   background: rgb(169, 169, 255);
   box-shadow: inset 0 0 0 10px red;
