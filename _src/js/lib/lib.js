@@ -23,7 +23,9 @@ TODO: Test listening for swipe gestures instead of just relying on the cosest sl
 TODO: Test a scroll listener that updates a css variable relating to the position of the slide inside the scroll window. Similar to the way ScrollOut works. Perhaps as a plugin.
 
 
+TODO: Debounce the functions inside intersectionObserver. They fire too fast on window resizing.
 
+TODO: Stop drag and transforming to a value outside of the scroll area.
 
 
 
@@ -74,8 +76,8 @@ function slippySlider({
   /* 
   Set some custom css properties based on the params and add them to the slider
   */
-  const scrollSnapAlign = this.center ? "center" : "start";
-  this.slider.style.setProperty("--scroll-snap-align", scrollSnapAlign);
+  // const scrollSnapAlign = this.center ? "center" : "start";
+  // this.slider.style.setProperty("--scroll-snap-align", scrollSnapAlign);
   // TODO: Set a padding left and right option adjusts the intersection observer area
   // As well as adjusting the scroll container padding and offsetting the slider position detection and scrollOffset
 
@@ -103,16 +105,16 @@ function slippySlider({
   /* 
   Functions to disable scroll snapping for all slides and to remove inline styles
   */
-  const disableSnapping = () => {
-    console.log("disabled snapping");
-    // this.slider.style.scrollSnapType = "none";
-    // this.slides.forEach(slide => (slide.style.scrollSnapAlign = "none"));
-  };
-  const enableSnapping = () => {
-    console.log("enabled snapping");
-    // this.slider.style.scrollSnapType = "";
-    // this.slides.forEach(slide => (slide.style.scrollSnapAlign = ""));
-  };
+  // const disableSnapping = () => {
+  //   console.log("disabled snapping");
+  //   // this.slider.style.scrollSnapType = "none";
+  //   // this.slides.forEach(slide => (slide.style.scrollSnapAlign = "none"));
+  // };
+  // const enableSnapping = () => {
+  //   console.log("enabled snapping");
+  //   // this.slider.style.scrollSnapType = "";
+  //   // this.slides.forEach(slide => (slide.style.scrollSnapAlign = ""));
+  // };
 
   /* 
   Finds closest slide to the left edge or the center of the slider depending on slider settings
@@ -198,13 +200,11 @@ function slippySlider({
     const startAnim = time => {
       start = time;
       end = start + duration;
-      disableSnapping();
       nextFrame(time);
     };
 
     const nextFrame = time => {
       if (stop) {
-        enableSnapping();
         this.track.style.transform = "";
         this.slider.scrollLeft = finalScrollPos;
         return;
@@ -277,59 +277,46 @@ function slippySlider({
   }
 
   /* 
-  Functions to allow dragging with the mouse pointer
-  (touch dragging is enabled by default on mobile devices due to default scroll behaviour)
+  Functions to allow dragging
   */
   let mouseDown = false;
   let firstPos = 0;
   let dragValue = 0;
   let sliderCurrentScroll = null;
-  // Flags to check whether screen was touched or snapping is turned on or off.
-  let didTouch = false;
-  let snapping = true;
 
   const startDrag = e => {
     console.log("startDrag");
     e.stopPropagation();
     // e.preventDefault();
-    if (didTouch) {
-      didTouch = true;
-      return;
-    }
     mouseDown = true;
     firstPos = e.pageX;
     sliderCurrentScroll = this.slider.scrollLeft;
   };
 
   const drag = e => {
-    console.log("drag");
     // e.stopPropagation();
     if (mouseDown) {
-      if (snapping) {
-        disableSnapping();
-        snapping = false;
-      }
+      console.log("drag");
       dragValue = firstPos - e.pageX + sliderCurrentScroll;
-      this.slider.scrollLeft = dragValue;
+      // this.slider.scrollLeft = dragValue;
+      console.log('sliderCurrentScroll -->', sliderCurrentScroll);
+      console.log('dragValue -->', dragValue);
+      this.slider.scrollLeft = 0;
+      this.track.style.transform = `translateX(${dragValue * -1}px)`;
     }
   };
 
   const endDrag = e => {
-    console.log("endDrag");
     e.stopPropagation();
     if (mouseDown && dragValue !== 0) {
+      this.track.style.transform = '';
+      this.slider.scrollLeft = dragValue;
       this.moveTo("active");
       dragValue = 0;
-      // enableSnapping();
-      snapping = true;
+      mouseDown = false;
+      console.log("endDrag");
     }
-    mouseDown = false;
   };
-  // This stops touch event from triggering the mouse events as well.
-  // this.track.addEventListener("touchstart", () => {
-  //   didTouch = true;
-  //   console.log("touchstart");
-  // });
 
   // Testing out overriding scrolling for touch
   this.track.addEventListener("touchstart", startDrag);

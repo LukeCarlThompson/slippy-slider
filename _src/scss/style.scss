@@ -225,7 +225,7 @@ body {
 }
 .test-track {
   display: flex;
-  // transform: translateX(-200%);
+  transform: translateX(-200%);
   overflow: visible;
   background-color: pink;
   box-shadow: 0 0 0 10px blue;
@@ -235,6 +235,9 @@ body {
   // flex: 0 0 10%; // Percentage based on the number of slides
   scroll-snap-align: center;
   min-width: 100%;
+  @media screen and (max-width: 800px) {
+    min-width: 50%;
+  }
   height: 400px;
   background: rgb(169, 169, 255);
   box-shadow: inset 0 0 0 10px red;
