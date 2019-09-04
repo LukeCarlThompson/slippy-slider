@@ -52,3 +52,12 @@ responsivePrevButton.addEventListener("click", () => {
 responsiveNextButton.addEventListener("click", () => {
   sliderResponsive.moveTo("next");
 });
+
+
+
+// Testing
+const sliderTestTwo = new slippySlider({
+  slider: ".test-container--02",
+  slides: ".test-slide",
+  center: false,
+});

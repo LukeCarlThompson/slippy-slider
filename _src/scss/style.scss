@@ -212,7 +212,7 @@ body {
 
 
 // Testing percentage based widths. This works but requires the track width and the slide widths to be percentage based on the number of slides. Allows responsive sizing without a js listener.
-.test-container {
+.test-container--01 {
   width: 50vw;
   margin: 100px auto;
   // overflow: hidden;
@@ -222,26 +222,77 @@ body {
   overflow: scroll;
   background: green;
   padding: 20px;
-}
-.test-track {
-  display: flex;
-  transform: translateX(-200%);
-  overflow: visible;
-  background-color: pink;
-  box-shadow: 0 0 0 10px blue;
+  .test-track {
+    display: flex;
+    transform: translateX(-200%);
+    overflow: visible;
+    background-color: pink;
+    box-shadow: 0 0 0 10px blue;
+  }
+  
+  .test-slide {
+    // flex: 0 0 10%; // Percentage based on the number of slides
+    scroll-snap-align: center;
+    min-width: 100%;
+    @media screen and (max-width: 800px) {
+      min-width: 50%;
+    }
+    height: 400px;
+    background: rgb(169, 169, 255);
+    box-shadow: inset 0 0 0 10px red;
+    @media screen and (max-width: 900px) {
+      // min-width: calc(50% - 40px);
+    }
+  }
 }
 
-.test-slide {
-  // flex: 0 0 10%; // Percentage based on the number of slides
-  scroll-snap-align: center;
-  min-width: 100%;
-  @media screen and (max-width: 800px) {
-    min-width: 50%;
+
+// TODO: New approach to try. Allows for overflow visible or hidden.
+.test-container--02 {
+  width: 50vw;
+  margin: 100px auto;
+  overflow: visible;
+  background: green;
+  padding: 20px;
+
+  // Try positioning the slide trolley with flex on the parent.
+  // See if I can measure all the transforms based on the position of this instead of the position of the slider wrap.
+  // That would allow for Slider center/left modes via CSS and more intuitive margin setting
+  // This can also be used to easily control the left and right limits of the slider too.
+  display: flex;
+  justify-content: center;
+  .slide-trolley {
+    // This holds the slides and also controls the width of each slide
+    display: flex;
+    // margin-left: 20px;
+    // Setting the width of this also sets the width for each slide. Uses a percentage value of the parent or a pixel value. Heck even a calc is fine.
+    width: calc(50% - 20px);
+    @media screen and (max-width: 600px) {
+      width: calc(100% - 40px);
+    }
+    
+    overflow: visible;
+    background-color: pink;
+    box-shadow: 0 0 0 10px blue;
   }
-  height: 400px;
-  background: rgb(169, 169, 255);
-  box-shadow: inset 0 0 0 10px red;
-  @media screen and (max-width: 900px) {
-    // min-width: calc(50% - 40px);
+  
+  .test-slide {
+    // Must set min-width or set flex-shrink to 0;
+    // min-width: 100%;
+    // flex: 0 0 100%;
+    width: 100%;
+    flex-shrink: 0;
+    // Set position relative on each slide, this allows the inline styles for slider position to work
+    position: relative;
+    // Set the left value as a percentage inline via javascript to position the slides correctly after the interaction finishes
+    // EG: left: -200%;
+    left: -100%;
+    // Then use a media query and set position to static when you want to override the inline styles and reset the slider
+    @media screen and (min-width: 768px) {
+      position: static;
+    }
+    height: 400px;
+    background: rgb(169, 169, 255);
+    box-shadow: inset 0 0 0 10px red;
   }
 }
