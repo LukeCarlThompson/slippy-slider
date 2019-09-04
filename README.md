@@ -1,5 +1,22 @@
 # Slippy Slider
-### A slider based on extending the functionality of native scroll areas
+### A minimal slider that lets you do your thing
+
+
+## Project goals
+### Core concepts
+  1. Slider styled via CSS
+  2. Not rely on inline styles set by javascript
+  3. Responsive based on CSS styles only, no resize listener
+  4. Only use javascript for interaction
+  5. Degrade gracefully for older browsers
+  6. Zero dependencies
+
+### Features
+  1. Allow for center and left aligned slides
+  2. Allow for next and prev slide buttons
+  3. Allow for slide thumbnails or dots navigation
+  4. Allow for multiple instances on the same page.
+
 
 ## Feature list
 - Roll your own responsive settings with good old CSS. No js needed.
@@ -115,19 +132,6 @@ Due to the nature of the way browsers interpret scrolling on the x-axis you shou
 The class `.on-screen` is dynamically applied to every slide that is more than 50% inside the slider, and removed when it is more than half outside the container.
 
 If `{center: true}` the class `.active-slide` is applied to the slide that at least part of it is in the center of the slider. If `{center: false}` the class `.active-slide` is applied to the class closest the the left side of the slider and more than 50% inside the slider.
-
-
-## Project goals
-  1. Slider styled via css and not rely on javascript dom manipulation
-  2. Allow for center and left aligned slides
-  3. Allow for next and prev slide buttons
-  4. Allow for slide thumbnails or dots navigation
-  5. Responsive out of the box
-  6. Allow for multiple instances on the same page.
-  7. Zero dependencies
-  8. Degrade gracefully in older browsers to appear as a native scroll area.
-  9. Degrade gracefully if JS doesn't run or is not supported
-  10. Under 10kb
 
 
   ### Coming soon
