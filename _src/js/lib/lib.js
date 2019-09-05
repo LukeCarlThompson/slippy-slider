@@ -2,11 +2,9 @@
 
 TODO: Set a duration parameter for the scrollFromTo timing.
 
-TODO: Set a easing parameter for the scrollFromTo easing.
+TODO: Use CSS transitions instead of the RAF loop
 
 TODO: Test what happens when intersectionObserver fails provide a fallback. Probably looping over all slides and adding a class to make sure they are visible. Could just be the .on-screen class.
-
-TODO: Test with multiple sliders on the same page.
 
 TODO: If slider is currently scrolling, don't respond to clicks events or slide interaction until it is finished.
 
@@ -14,14 +12,11 @@ TODO: Test out automating the slider dots/thumbnails creation.
 
 TODO: Test out the slider emitting some custom events that fire when the slider is moved to a new slide.
 
-TODO: Test out using a throttled resize listener that shows and hides the navigation buttons when all slides are on the screen. Or should this be left up to CSS?
-
 TODO: Create a destroy method that removes the intersection observer and event listeners.
 
 TODO: Test listening for swipe gestures instead of just relying on the cosest slide. Can be awkward to click and drag so far if the slide takes up the whole screen.
 
 TODO: Test a scroll listener that updates a css variable relating to the position of the slide inside the scroll window. Similar to the way ScrollOut works. Perhaps as a plugin.
-
 
 TODO: Debounce the functions inside intersectionObserver. They fire too fast on window resizing.
 
@@ -30,11 +25,9 @@ TODO: Stop drag and transforming to a value outside of the scroll area.
 
 
 
-TODO: Latest testing reveals that it's all the class swapping during scrolling in safari that causes all the jank.
-We can remove scrolling and scroll snapping altogether and still be able to set scroll position for the slider.
-Or perhaps test out just using a transform percentage value set inline.
-This will probably still require a resize listener that then removes it at certain breakpoints though.
-To Allow CSS styling that sets up and removes the slider. Or perhaps an configurable option that just fires an event/callback function at whatever breakpoint you set. This event listener could be heavily debounced.
+TODO: Create an internal property that holds the current sliders position.
+
+TODO: Convert the pixel value positioning to a percentage of the slider trolley width
 
 */
 
@@ -101,20 +94,6 @@ function slippySlider({
     this.slides.map(slide => slide.classList.remove(className));
   const addClassToSlides = className =>
     this.slides.map(slide => slide.classList.add(className));
-
-  /* 
-  Functions to disable scroll snapping for all slides and to remove inline styles
-  */
-  // const disableSnapping = () => {
-  //   console.log("disabled snapping");
-  //   // this.slider.style.scrollSnapType = "none";
-  //   // this.slides.forEach(slide => (slide.style.scrollSnapAlign = "none"));
-  // };
-  // const enableSnapping = () => {
-  //   console.log("enabled snapping");
-  //   // this.slider.style.scrollSnapType = "";
-  //   // this.slides.forEach(slide => (slide.style.scrollSnapAlign = ""));
-  // };
 
   /* 
   Finds closest slide to the left edge or the center of the slider depending on slider settings
@@ -195,7 +174,8 @@ function slippySlider({
 
     const from = 0;
     const to = findSlide(x).scrollOffset;
-    const finalScrollPos = to + this.slider.scrollLeft;
+    // This current scroll position value should be cached somewhere and converted to a percentage of the trolley's width
+    const finalScrollPos = to + (this.track.getBoundingClientRect().left - this.slides[0].getBoundingClientRect().left);
 
     const startAnim = time => {
       start = time;
@@ -206,7 +186,8 @@ function slippySlider({
     const nextFrame = time => {
       if (stop) {
         this.track.style.transform = "";
-        this.slider.scrollLeft = finalScrollPos;
+        // this.slider.scrollLeft = finalScrollPos;
+        this.slides.forEach(slide => slide.style.left = `${finalScrollPos * -1}px`);
         return;
       }
       if (time - start >= duration) stop = true;
@@ -290,7 +271,8 @@ function slippySlider({
     // e.preventDefault();
     mouseDown = true;
     firstPos = e.pageX;
-    sliderCurrentScroll = this.slider.scrollLeft;
+    // This value should be cached somewhere and converted to a percentage of the trolley's width
+    sliderCurrentScroll =  this.track.getBoundingClientRect().left - this.slides[0].getBoundingClientRect().left;
   };
 
   const drag = e => {
@@ -301,7 +283,8 @@ function slippySlider({
       // this.slider.scrollLeft = dragValue;
       console.log('sliderCurrentScroll -->', sliderCurrentScroll);
       console.log('dragValue -->', dragValue);
-      this.slider.scrollLeft = 0;
+      // this.slider.scrollLeft = 0;
+      this.slides.forEach(slide => slide.style.left = '');
       this.track.style.transform = `translateX(${dragValue * -1}px)`;
     }
   };
@@ -310,7 +293,8 @@ function slippySlider({
     e.stopPropagation();
     if (mouseDown && dragValue !== 0) {
       this.track.style.transform = '';
-      this.slider.scrollLeft = dragValue;
+      // this.slider.scrollLeft = dragValue;
+      this.slides.forEach(slide => slide.style.left = `${dragValue * -1}px`);
       this.moveTo("active");
       dragValue = 0;
       mouseDown = false;

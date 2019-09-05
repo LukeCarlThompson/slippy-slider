@@ -59,5 +59,15 @@ responsiveNextButton.addEventListener("click", () => {
 const sliderTestTwo = new slippySlider({
   slider: ".test-container--02",
   slides: ".test-slide",
-  center: false,
+  center: true,
+});
+
+const testTwoPrevButton = document.querySelector(".control-buttons.test--02 .control-prev");
+const testTwoNextButton = document.querySelector(".control-buttons.test--02 .control-next");
+
+testTwoPrevButton.addEventListener("click", () => {
+  sliderTestTwo.moveTo("prev");
+});
+testTwoNextButton.addEventListener("click", () => {
+  sliderTestTwo.moveTo("next");
 });

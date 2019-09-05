@@ -286,7 +286,7 @@ body {
     position: relative;
     // Set the left value as a percentage inline via javascript to position the slides correctly after the interaction finishes
     // EG: left: -200%;
-    left: -100%;
+    // left: -100px;
     // Then use a media query and set position to static when you want to override the inline styles and reset the slider
     @media screen and (min-width: 768px) {
       position: static;
