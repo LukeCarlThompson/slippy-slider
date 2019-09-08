@@ -147,20 +147,20 @@ function slippySlider({
   /* 
   Easing functions
   */
-  this.easing = {
-    inOutQuad: t => {
-      return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-    },
-    inOutCubic: t => {
-      return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
-    },
-    inOutQuart: t => {
-      return t < 0.5 ? 8 * t * t * t * t : 1 - 8 * --t * t * t * t;
-    },
-    inOutQuint: t => {
-      return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * --t * t * t * t * t;
-    },
-  };
+  // this.easing = {
+  //   inOutQuad: t => {
+  //     return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+  //   },
+  //   inOutCubic: t => {
+  //     return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+  //   },
+  //   inOutQuart: t => {
+  //     return t < 0.5 ? 8 * t * t * t * t : 1 - 8 * --t * t * t * t;
+  //   },
+  //   inOutQuint: t => {
+  //     return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * --t * t * t * t * t;
+  //   },
+  // };
 
   /* 
   RAF powered animation.
@@ -175,7 +175,9 @@ function slippySlider({
     const from = 0;
     const to = findSlide(x).scrollOffset;
     // This current scroll position value should be cached somewhere and converted to a percentage of the trolley's width
-    const finalScrollPos = to + (this.track.getBoundingClientRect().left - this.slides[0].getBoundingClientRect().left);
+    const finalScrollPx = to + (this.track.getBoundingClientRect().left - this.slides[0].getBoundingClientRect().left);
+    const finalScrollPercent = (finalScrollPx / this.track.clientWidth) * 100;
+    const finalScrollPos = finalScrollPercent;
 
     const startAnim = time => {
       start = time;
@@ -183,22 +185,30 @@ function slippySlider({
       nextFrame(time);
     };
 
-    const nextFrame = time => {
-      if (stop) {
-        this.track.style.transform = "";
-        // this.slider.scrollLeft = finalScrollPos;
-        this.slides.forEach(slide => slide.style.left = `${finalScrollPos * -1}px`);
-        return;
-      }
-      if (time - start >= duration) stop = true;
-      const progress = (time - start) / duration;
-      const val = this.easing.inOutCubic(progress);
-      const nextPosition = (from + (to - from) * val) * -1;
-      this.track.style.transform = `translate3d(${nextPosition}px, 0, 0)`;
-      requestAnimationFrame(nextFrame);
-    };
+    this.track.style.transition = `transform 0.5s cubic-bezier(0.5, 0, 0.5, 1)`;
+    this.track.style.transform = `translate3d(${to * -1}px, 0, 0)`;
+    this.track.addEventListener('transitionend', () => {
+      this.track.style.transform = "";
+      this.track.style.transition = "";
+      this.slides.forEach(slide => slide.style.left = `${finalScrollPos * -1}%`);
+    })
 
-    requestAnimationFrame(startAnim);
+    // const nextFrame = time => {
+    //   if (stop) {
+    //     this.track.style.transform = "";
+    //     // this.slider.scrollLeft = finalScrollPos;
+    //     this.slides.forEach(slide => slide.style.left = `${finalScrollPos * -1}%`);
+    //     return;
+    //   }
+    //   if (time - start >= duration) stop = true;
+    //   const progress = (time - start) / duration;
+    //   const val = this.easing.inOutCubic(progress);
+    //   const nextPosition = (from + (to - from) * val) * -1;
+    //   this.track.style.transform = `translate3d(${nextPosition}px, 0, 0)`;
+    //   requestAnimationFrame(nextFrame);
+    // };
+
+    // requestAnimationFrame(startAnim);
   };
 
   /* 
@@ -278,11 +288,11 @@ function slippySlider({
   const drag = e => {
     // e.stopPropagation();
     if (mouseDown) {
-      console.log("drag");
+      // console.log("drag");
       dragValue = firstPos - e.pageX + sliderCurrentScroll;
       // this.slider.scrollLeft = dragValue;
-      console.log('sliderCurrentScroll -->', sliderCurrentScroll);
-      console.log('dragValue -->', dragValue);
+      // console.log('sliderCurrentScroll -->', sliderCurrentScroll);
+      // console.log('dragValue -->', dragValue);
       // this.slider.scrollLeft = 0;
       this.slides.forEach(slide => slide.style.left = '');
       this.track.style.transform = `translateX(${dragValue * -1}px)`;
@@ -298,7 +308,7 @@ function slippySlider({
       this.moveTo("active");
       dragValue = 0;
       mouseDown = false;
-      console.log("endDrag");
+      // console.log("endDrag");
     }
   };
 
